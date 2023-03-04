@@ -1,22 +1,24 @@
 ---
 pool:
-  name: "Azure Pipelines" 
+  name: "Agent_Gopi"
   vmImage: 'ubuntu-latest'
-
 trigger:
   - main
+resources:
+  repositories:
+    - repository: 'imagerepo'
+      name: 'gopijammula/Docker_images'
+      endpoint: 'github.com_gopijammula'
+      type: 'github'
+      ref: 'refs/heads/main'
+stages: 
+  - stage: image_build
+    displayname: DockerImage
+    steps: 
+      - task: Docker@2
+        inputs: 
+        command: buildAndPush
+        containerRegistry: Gopi_Docker
+        Dockerfile: ./Dockerfile.spcmultistage@imagerepo
+        tags: 'gopi12'
 
-stages:
-  - stage: BuildStage
-    displayName: CI
-    jobs:
-      - job: mavenjob
-        displayName: maven
-        steps:
-          - task: Maven@3
-            inputs:
-              mavenPomFile: 'pom.xml'
-              goals: 'package'
-              publishJUnitResults: true
-              testResultsFiles: '**/surefire-reports/TEST-*.xml'
-              jdkVersionOption: '1.17'
